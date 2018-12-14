@@ -1,0 +1,101 @@
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import java.util.concurrent.TimeUnit;
+
+public class TestForLogout {
+
+	WebDriver driver;
+
+	@Test
+	public void logoutTestRefresh() {
+
+		// Step 1 - Open Browser
+		driver = new ChromeDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.get("https://app.doublestruck.eu/login.php?br=TB");
+
+		//Step 2 - Enter "itchy@itchyscoop.com" in username field
+		//Enter "TestbaseTest1" in password field
+		//Click Login Button"
+		WebElement usernameInput = driver.findElementby(By.id("username"));
+		WebElement passwordInput = driver.findElementby(By.id("password"));
+		WebElement loginButton = driver.findElement(By.id("login"));
+
+		usernameInput.sendKeys("itchy@itchyscoop.com");
+		passwordInput.sendKeys("TestbaseTest1");
+		loginButton.click();
+		waitForLoad(driver);
+
+		//Step 3 - Click "Admin Console" from left panel
+		WebElement adminConsoleButton = driver.findElement(By.xpath("//div[@class='admin-button']"));
+		adminConsoleButton.click();
+		waitForLoad(driver);
+
+		//Step 4 - Click "Logout"  from left panel
+		ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
+    	driver.switchTo().window(tabs2.get(1));
+    	waitForLoad(driver);
+    	WebElement adminConsoleLogOutButton = driver.findElement(By.xpath("//li[@class='side-bar-menu-item logout']"));
+    	adminConsoleLogOutButton.click();
+    	waitForLoad(driver);
+    	
+		//Step 5 - Return to main page tab and refresh the page
+		driver.switchTo().window(tabs2.get(0));
+		driver.navigate().refresh();
+		Assert.assertTrue(loginButton.isDisplayed());
+	}
+
+	@Test
+	public void logoutTestBackword() {
+
+		// Step 1 - Open Browser
+		driver = new ChromeDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.get("https://app.doublestruck.eu/login.php?br=TB");
+
+		//Step 2 - Enter "itchy@itchyscoop.com" in username field
+		//Enter "TestbaseTest1" in password field
+		//Click Login Button"
+		WebElement usernameInput = driver.findElementby(By.id("username"));
+		WebElement passwordInput = driver.findElementby(By.id("password"));
+		WebElement loginButton = driver.findElement(By.id("login"));
+
+		usernameInput.sendKeys("itchy@itchyscoop.com");
+		passwordInput.sendKeys("TestbaseTest1");
+		loginButton.click();
+		waitForLoad(driver);
+
+		//Step 3 - Click "Admin Console" from left panel
+		WebElement adminConsoleButton = driver.findElement(By.xpath("//div[@class='admin-button']"));
+		adminConsoleButton.click();
+		waitForLoad(driver);
+
+		//Step 4 - Click "Logout"  from left panel
+		ArrayList<String> tabs2 = new ArrayList<String> (driver.getWindowHandles());
+    	driver.switchTo().window(tabs2.get(1));
+    	waitForLoad(driver);
+    	WebElement adminConsoleLogOutButton = driver.findElement(By.xpath("//li[@class='side-bar-menu-item logout']"));
+    	adminConsoleLogOutButton.click();
+    	waitForLoad(driver);
+    	
+		//Step 5 - Return to main page tab and navigate back from browser
+		driver.switchTo().window(tabs2.get(0));
+		driver.navigate().back();
+		Assert.assertTrue(loginButton.isDisplayed());
+	}
+
+	public void waitForLoad(WebDriver driver) {
+        ExpectedCondition<Boolean> pageLoadCondition = new
+                ExpectedCondition<Boolean>() {
+                    public Boolean apply(WebDriver driver) {
+                        return ((JavascriptExecutor)driver).executeScript("return document.readyState").equals("complete");
+                    }
+                };
+        WebDriverWait wait = new WebDriverWait(driver, 30);
+        wait.until(pageLoadCondition);
+    }
+}
